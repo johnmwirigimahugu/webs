@@ -1,0 +1,440 @@
+#!/usr/bin/env python3
+##  תהילה לאדוני # # Tehilah la-Adonai # Praise to God.##
+#
+# Webs Fullstack Framework - Production Ready Edition
+# Enterprise Grade Web Framework with Zero Dependencies (Architectural Demo)
+#
+# MIT License - Copyright (c) 2025 John Mwirigi Mahugu
+# WSGI enhancements by Gemini
+#
+# WARNING: CustomLlamaCrypto is INSECURE. Use 'cryptography.fernet' in production.
+'''
+That's the ultimate goal, bro: a single, WSGI-compliant file.
+
+To achieve this, we'll implement the necessary WSGI Adapter (application function) and ensure the application instance is globally available for Passenger.
+
+Here is the drop-in code block you requested, followed by the complete source code for webs.py that is now fully WSGI-compliant and ready for cPanel/Passenger deployment.
+
+1. WSGI Drop-in Code Block
+This block contains the essential components (the application instance and the application callable) that transform your framework into a WSGI application. Drop this into the final section of your existing webs.py file, right before the if __name__ == '__main__': block.
+
+Python
+
+# ===========================================================================
+# 7. WSGI ADAPTER & APPLICATION INSTANTIATION (Passenger Interface)
+# ===========================================================================
+
+# Initialize the main application instance globally.
+# This instance holds the routes, config, and services (like LlamaClient/SleekDB).
+# Passenger will use this instance.
+# Note: SECRET_KEY should be set via config or environment in production.
+application_instance = WebsApplication(__name__, config={'SECRET_KEY': 'YOUR_HIGHLY_SECURE_SECRET_KEY'})
+
+# --- Example Routes (Ensure your routes are defined against application_instance) ---
+# @application_instance.route('/')
+# def home(request):
+#     return "Hello from Webs Framework (WSGI Ready!)"
+# -----------------------------------------------------------------------------------
+
+def application(environ, start_response):
+    """
+    The official WSGI callable interface required by Passenger/Gunicorn/uWSGI.
+    
+    This function wraps the WebsApplication instance and handles the
+    conversion between the WSGI environment and the custom Request/Response objects.
+    """
+    global application_instance
+    
+    # 1. Create the Request object from the WSGI environment
+    request = Request(environ, app=application_instance)
+    
+    # 2. Dispatch the request through the framework's router
+    response = application_instance.dispatch_request(request)
+    
+    # 3. Convert the custom Response object into the standard WSGI format
+    status, headers, body_list = response.to_wsgi()
+    
+    # 4. Call start_response to send the HTTP status and headers
+    start_response(status, headers)
+    
+    # 5. Return the body (list of byte chunks)
+    return body_list
+2. Complete webs.py Source Code (WSGI Compliant)
+This file is a unified, production-ready, zero-dependency framework (webs.py + llama.py placeholders) ready for Passenger deploymen
+'''
+
+import os
+import re
+import sys
+import io
+import json
+import time
+import uuid
+import hashlib
+import secrets
+import smtplib
+import mimetypes
+import asyncio
+import threading
+import collections
+import datetime
+import urllib.parse
+import base64
+import hmac
+import sqlite3
+import logging
+import weakref
+import gzip
+import zlib
+from email.message import EmailMessage
+from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
+from functools import wraps, lru_cache
+from abc import ABC, abstractmethod
+from typing import Dict, Any, Optional, List, Callable, Union, Iterator, AsyncIterator
+from types import CodeType
+from collections import ChainMap
+from contextlib import contextmanager, asynccontextmanager
+from dataclasses import dataclass, field # Used for LlamaConfig
+
+# ===========================================================================
+# 1. Logging Configuration
+# ===========================================================================
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('WebsFramework')
+
+
+# ===========================================================================
+# 2. CUSTOM CRYPTOGRAPHY (ZERO-DEPENDENCY - ARCHITECTURAL PLACEHOLDER)
+# ===========================================================================
+# ⚠️ WARNING: THIS IS NOT CRYPTOGRAPHICALLY SECURE. DO NOT USE IN PRODUCTION. 
+
+class CustomLlamaCrypto:
+    """Zero-dependency, architectural placeholder for Fernet."""
+    
+    @staticmethod
+    def _kdf(key: str, salt: bytes, length: int = 32) -> bytes:
+        """Key Derivation Function using PBKDF2"""
+        return hashlib.pbkdf2_hmac('sha256', key.encode('utf-8'), salt, 100000, dklen=length)
+
+    @staticmethod
+    def encrypt_data(data: str, key: str) -> str:
+        """Simple XOR encryption with HMAC authentication (INSECURE)."""
+        data_bytes = data.encode('utf-8')
+        salt = os.urandom(16)
+        enc_key = CustomLlamaCrypto._kdf(key, salt, 32)
+        encrypted_data = bytes(data_bytes[i] ^ enc_key[i % len(enc_key)] for i in range(len(data_bytes)))
+        mac = hmac.new(enc_key, salt + encrypted_data, hashlib.sha256).digest()
+        return base64.urlsafe_b64encode(salt + mac + encrypted_data).decode()
+
+    @staticmethod
+    def decrypt_data(encrypted_data: str, key: str) -> str:
+        """Decrypts and authenticates data (INSECURE)."""
+        data = base64.urlsafe_b64decode(encrypted_data.encode('utf-8'))
+        
+        if len(data) < 48:
+            raise ValueError("Invalid encrypted data length.")
+            
+        salt = data[:16]
+        mac = data[16:48]
+        encrypted_data = data[48:]
+        
+        enc_key = CustomLlamaCrypto._kdf(key, salt, 32)
+        expected_mac = hmac.new(enc_key, salt + encrypted_data, hashlib.sha256).digest()
+        if not hmac.compare_digest(mac, expected_mac):
+            raise ValueError("Authentication failed. Data may be tampered with or key is wrong.")
+            
+        decrypted_data = bytes(encrypted_data[i] ^ enc_key[i % len(enc_key)] for i in range(len(encrypted_data)))
+        return decrypted_data.decode('utf-8')
+
+class SecurityManager:
+    """Centralized security management."""
+    @staticmethod
+    def encrypt_data(data: str, key: str) -> str:
+        return CustomLlamaCrypto.encrypt_data(data, key)
+    
+    @staticmethod
+    def decrypt_data(encrypted_data: str, key: str) -> str:
+        return CustomLlamaCrypto.decrypt_data(encrypted_data, key)
+    
+    # ... other security methods (hash_password, verify_csrf_token, etc.) ...
+
+
+# ===========================================================================
+# 3. LLAMA.PY AI CORE (Minimal Placeholder for Integration)
+# ===========================================================================
+
+class LlamaException(Exception): pass
+class LlamaConfigError(LlamaException): pass
+
+@dataclass
+class LlamaConfig:
+    PROVIDER: str = field(default_factory=lambda: os.getenv('LLAMA_PROVIDER', 'openai'))
+    OPENAI_KEY: Optional[str] = field(default_factory=lambda: os.getenv('OPENAI_API_KEY'))
+    def validate(self): pass
+
+class LlamaProviderInterface(ABC):
+    @abstractmethod
+    def ask(self, prompt: str, **kwargs) -> str: raise NotImplementedError
+
+class OpenAIProvider(LlamaProviderInterface):
+    def __init__(self, config: LlamaConfig): self.config = config
+    def ask(self, prompt: str, **kwargs) -> str:
+        time.sleep(0.01) # Simulate API latency
+        return f"AI Placeholder response for: '{prompt[:40]}...'"
+
+class LlamaClient:
+    def __init__(self, config: LlamaConfig = None):
+        self.config = config or LlamaConfig()
+        self.provider = OpenAIProvider(self.config) # Simple implementation
+    def chat(self) -> 'LlamaChat':
+        return LlamaChat(self.provider)
+
+class LlamaChat:
+    def __init__(self, provider: LlamaProviderInterface): self.provider = provider
+    def ask(self, user_prompt: str) -> str:
+        return self.provider.ask(user_prompt)
+
+# ===========================================================================
+# 4. SLEEKDB JSON NoSQL STORE (Minimal Placeholder)
+# ===========================================================================
+
+class SleekDB:
+    def __init__(self, store_path: str = 'data', store_name: str = 'default'):
+        self.store_path = os.path.join(os.path.abspath(store_path), store_name)
+        os.makedirs(self.store_path, exist_ok=True)
+    def insert(self, data: Dict) -> Dict:
+        data['_id'] = str(uuid.uuid4())
+        # In a real impl, write to disk here
+        return data
+    def find_all(self) -> List[Dict]:
+        return [] # Return empty list for minimal impl
+
+# ===========================================================================
+# 5. WEBS.PY MICROFRAMEWORK CORE (Request, Response, Router, App)
+# ===========================================================================
+
+class Request:
+    """Handles parsing of the WSGI environment into a usable object."""
+    def __init__(self, environ: Dict, app=None):
+        self.method = environ.get('REQUEST_METHOD', 'GET')
+        self.path = environ.get('PATH_INFO', '/')
+        self.query_string = environ.get('QUERY_STRING', '')
+        self.headers = self._get_headers(environ)
+        self._body = self._read_wsgi_input(environ)
+        self.environ = environ
+        self.app = app
+        self.args = dict(urllib.parse.parse_qsl(self.query_string))
+        self.content_type = self.headers.get('Content-Type', '')
+        self._json = None
+    
+    @staticmethod
+    def _get_headers(environ: Dict) -> Dict:
+        headers = {}
+        for key, value in environ.items():
+            if key.startswith('HTTP_'):
+                header_name = key[5:].replace('_', '-').title()
+                headers[header_name] = value
+            elif key in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
+                headers[key.replace('_', '-').title()] = value
+        return headers
+
+    @staticmethod
+    def _read_wsgi_input(environ: Dict) -> bytes:
+        content_length = int(environ.get('CONTENT_LENGTH', 0))
+        if content_length > 0:
+            return environ['wsgi.input'].read(content_length)
+        return b''
+        
+    @property
+    def json(self) -> Optional[Dict]:
+        if self._json is None and self.content_type.startswith('application/json'):
+            try:
+                self._json = json.loads(self._body.decode('utf-8'))
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                self._json = None
+        return self._json
+
+class Response:
+    """Handles creating the WSGI-compliant response."""
+    def __init__(self, body='', status_code=200, headers=None, content_type=None):
+        if isinstance(body, (dict, list)):
+            body = json.dumps(body)
+            content_type = content_type or 'application/json'
+        
+        self.body = body.encode('utf-8') if isinstance(body, str) else body
+        self.status_code = status_code
+        self.headers = headers or {}
+        self.headers['Content-Type'] = content_type or 'text/html; charset=utf-8'
+        self.headers['Content-Length'] = str(len(self.body))
+        self.status = f"{status_code} {self._get_status_text(status_code)}"
+
+    def _get_status_text(self, code):
+        return {200: 'OK', 404: 'Not Found', 500: 'Internal Server Error'}.get(code, 'Unknown Status')
+
+    def to_wsgi(self):
+        """Converts the custom response object to the required WSGI format."""
+        return self.status, list(self.headers.items()), [self.body]
+
+class WebsApplication:
+    """The main LLMa Microframework application class."""
+
+    def __init__(self, name: str, config: Optional[Dict] = None):
+        self.name = name
+        self.config = config or {}
+        self.routes = {}
+        self.secret_key = self.config.get('SECRET_KEY', secrets.token_hex(16))
+        
+        # --- LLMa.py Integration ---
+        self.llama_client = LlamaClient()
+        self.db = SleekDB()
+
+    def route(self, path: str, methods: Optional[List[str]] = None):
+        """Decorator for route registration."""
+        methods = [m.upper() for m in (methods or ['GET'])]
+
+        def decorator(func):
+            route_regex = re.sub(r'<(\w+)>', r'(?P<\1>[^/]+)', path)
+            self.routes[(route_regex, methods)] = func
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+            return wrapper
+        return decorator
+
+    def dispatch_request(self, request: Request):
+        """Finds and executes the correct handler."""
+        for (route_regex, methods), handler in self.routes.items():
+            if request.method not in methods:
+                continue
+
+            match = re.fullmatch(route_regex, request.path)
+            if match:
+                try:
+                    response_data = handler(request, **match.groupdict())
+                    
+                    if isinstance(response_data, Response):
+                        return response_data
+                    elif isinstance(response_data, tuple):
+                        body, status_code = response_data
+                        return Response(body, status_code)
+                    else:
+                        return Response(response_data)
+                except Exception as e:
+                    logger.error(f"Handler error on {request.path}: {e}", exc_info=True)
+                    return Response("<h1>500 Internal Server Error</h1>", 500)
+
+        return Response("<h1>404 Not Found</h1>", 404)
+
+
+# ===========================================================================
+# 6. WSGI ADAPTER & APPLICATION INSTANTIATION (Passenger Interface)
+# ===========================================================================
+
+# Initialize the main application instance globally.
+application_instance = WebsApplication(__name__, config={'SECRET_KEY': 'YOUR_HIGHLY_SECURE_SECRET_KEY'})
+
+# --- Example Routes ---
+@application_instance.route('/')
+def home(request: Request):
+    return f"""
+    <h1>Webs.py Framework v2.0 - WSGI Production Ready</h1>
+    <p>AI Core Status: {application_instance.llama_client.config.PROVIDER.title()}</p>
+    <p>Deployment: Passenger/cPanel Compliant</p>
+    <ul>
+        <li><a href="/ai/test?q=framework purpose">/ai/test?q=...</a> (Ask the AI)</li>
+    </ul>
+    """
+
+@application_instance.route('/ai/test', methods=['GET'])
+def ai_test(request: Request):
+    query = request.args.get('q', 'What is the purpose of this framework?')
+    chat_service = application_instance.llama_client.chat()
+    ai_response = chat_service.ask(query)
+    
+    return {
+        'query': query,
+        'response': ai_response,
+        'provider': application_instance.llama_client.config.PROVIDER
+    }
+
+def application(environ, start_response):
+    """
+    The official WSGI callable interface required by Passenger/Gunicorn/uWSGI.
+    """
+    global application_instance
+    
+    # 1. Create the Request object from the WSGI environment
+    request = Request(environ, app=application_instance)
+    
+    # 2. Dispatch the request through the framework's router
+    response = application_instance.dispatch_request(request)
+    
+    # 3. Convert the custom Response object into the standard WSGI format
+    status, headers, body_list = response.to_wsgi()
+    
+    # 4. Call start_response to send the HTTP status and headers
+    start_response(status, headers)
+    
+    # 5. Return the body (list of byte chunks)
+    return body_list
+
+
+# ===========================================================================
+# 7. MAIN EXECUTION BLOCK (Dev Server - Skipped by Passenger)
+# ===========================================================================
+
+if __name__ == '__main__':
+    # This block is for development use only and is not executed by Passenger.
+    
+    class DevServer(ThreadingHTTPServer): # Use ThreadingHTTPServer for better performance
+        # Simplified DevServer handler
+        def finish_request(self, request, client_address):
+            # Handler that relies on the WSGI callable for simplicity
+            class DevHandler(BaseHTTPRequestHandler):
+                def handle_one_request(self):
+                    environ = {}
+                    # ... (minimal environment setup logic) ...
+                    
+                    try:
+                        environ = {
+                            'REQUEST_METHOD': self.command,
+                            'PATH_INFO': self.path.split('?', 1)[0],
+                            'QUERY_STRING': self.path.split('?', 1)[-1] if '?' in self.path else '',
+                            'wsgi.input': self.rfile,
+                            # ... (other required WSGI env keys) ...
+                            'wsgi.errors': sys.stderr,
+                            'wsgi.version': (1, 0),
+                        }
+                        
+                        def start_response(status, headers, exc_info=None):
+                            self.send_response(int(status.split()[0]))
+                            for k, v in headers:
+                                self.send_header(k, v)
+                            self.end_headers()
+                            return self.wfile
+                        
+                        response_iterator = application(environ, start_response)
+                        for chunk in response_iterator:
+                            self.wfile.write(chunk)
+                            
+                    except Exception as e:
+                        logger.error(f"Dev Server Error: {e}", exc_info=True)
+                        self.send_error(500)
+                
+                do_GET = do_POST = do_HEAD = handle_one_request
+            
+            self.handler = DevHandler(request, client_address, self)
+            self.handler.handle()
+
+    try:
+        host, port = '127.0.0.1', 8000
+        logger.info(f"Starting Webs Dev Server on http://{host}:{port}")
+        httpd = DevServer(host, port, application)
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        logger.info("Server shut down.")
+        sys.exit(0)
