@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webs Framework (Wabs-5000) - Full Technical Thesis & Documentation</title>
+    <meta name="description" content="Complete university-grade documentation for the Webs Zero-Dependency Fullstack Framework (Wabs-5000) by John Mwirigi Mahugu.">
+
+    <style>
+        /* Base Reset and Variables */
+        :root {
+            --primary: #3b82f6; /* Blue */
+            --primary-dark: #2563eb;
+            --secondary: #64748b; /* Gray */
+            --surface: #ffffff;
+            --surface-variant: #f3f4f6;
+            --on-background: #1f2937;
+            --on-surface: #374151;
+            --border-color: #e5e7eb;
+            --font-stack: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-stack); line-height: 1.6; color: var(--on-background); background: var(--surface-variant); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Navigation Bar (SPA Simulation) */
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .nav-list {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-list a {
+            color: var(--primary);
+            text-decoration: none;
+            padding: 5px 10px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-list a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Content Styling */
+        .content {
+            background: var(--surface);
+            padding: 40px 20px;
+            min-height: 100vh;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        h1, h2, h3, h4 { margin-top: 25px; margin-bottom: 15px; line-height: 1.2; }
+        h1 { font-size: 2.5rem; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        h2 { font-size: 2rem; color: var(--primary-dark); }
+        h3 { font-size: 1.5rem; color: var(--on-surface); }
+        p, ul, ol, table { margin-bottom: 15px; }
+        code, pre { background-color: #f0f4f7; border-radius: 4px; padding: 2px 5px; font-family: monospace; font-size: 0.9em; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 15px; overflow-x: auto; margin: 20px 0; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: left; }
+        th { background-color: var(--surface-variant); font-weight: 600; color: var(--primary-dark); }
+        .author-info { border: 1px solid var(--border-color); padding: 15px; background: var(--surface-variant); border-radius: 6px; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="container">
+            <div class="nav-list">
+                <a href="#top" style="font-weight: 700;">Wabs-5000 Docs 🧱</a>
+                <a href="#part1">Part 1: Basics</a>
+                <a href="#part2">Part 2: Deep Dive</a>
+                <a href="#part3">Part 3: Mastery</a>
+                <a href="#part4">Part 4: Thesis</a>
+            </div>
+        </div>
+    </div>
+
+    <main class="container content">
+
+        <h1 id="top">📚 Webs Fullstack Framework (Wabs-5000) Documentation Suite</h1>
+
+        <div class="author-info">
+            <h2>About the Author, Licensing, and Timestamp</h2>
+            <table>
+                <tr><th>Attribute</th><th>Detail</th></tr>
+                <tr><td>**Author**</td><td>John Mwirigi Mahugu</td></tr>
+                <tr><td>**Contact**</td><td>johnmahugu@gmail.com</td></tr>
+                <tr><td>**License**</td><td>MIT License (Copyright (c) 2025 John Mwirigi Mahugu)</td></tr>
+                <tr><td>**Timestamp**</td><td>Generated: October 2025</td></tr>
+            </table>
+            <h3>💡 Core Philosophy: Radical Self-Reliance</h3>
+            <p>The **Webs Framework** is built entirely on the **Python Standard Library**. This design choice ensures **maximal transparency, security, and portability** by eliminating the complexity, overhead, and supply-chain vulnerabilities inherent in external dependency chains. **Simplicity is Superbly Sweet.**</p>
+        </div>
+
+        <hr>
+
+        <h2 id="part1">**Part 1: The Basics (Hero: Setup & Manuals)**</h2>
+
+        <h3 id="manual">1.1 User Manual and MIS Documentation</h3>
+
+        <h4>Installation & System Requirements</h4>
+        <p>1. **System Requirements:** Any OS capable of running **Python 3.8+**.</p>
+        <p>2. **Installation:** **No <code>pip install</code> required.** Simply download the single-file <code>webs.py</code> and place it in your project root.</p>
+        <p>3. **Project Structure (Minimum):**</p>
+        <pre><code>my_project/
+├── webs.py      # The framework core
+├── app.py       # Your application entry point
+└── templates/   # HTML template files</code></pre>
+
+        <h4>Key Workflows (MIS/Operations)</h4>
+        <ul>
+            <li>**Startup:** Execute <code>python app.py</code> (Development Mode) or deploy the <code>WSGIAdapter</code> to Gunicorn/Passenger (Production).</li>
+            <li>**Monitoring:** The integrated **Sentinel** logging system streams to <code>sys.stderr</code> and maintains an in-memory error log, accessible via <code>app.sentinel.logs</code>.</li>
+            <li>**Troubleshooting (500 Errors):** Check the stack trace starting at the view function. Common issues are **Template Sandboxing violations** or **ORM database lock contention**.</li>
+        </ul>
+
+        <h4>GUI Navigation Guide (Webs.js Frontend)</h4>
+        <p>For the integrated frontend, **Webs.js (v5.0.0)**:</p>
+        <ul>
+            <li>**Component Model:** The frontend is built using single-file components registered via <code>webs.components.register()</code>.</li>
+            <li>**Navigation:** All routing is managed client-side by <code>webs.router</code>, ensuring **Single Page Application (SPA)** behavior.</li>
+            <li>**Theming:** The integrated <code>webs.css</code> framework is injected using <code>webs.css.inject()</code>, relying on CSS variables for easy custom branding.</li>
+        </ul>
+
+        <hr>
+
+        <h3 id="quick-start">1.2 Quick Start & Cheat Sheets</h3>
+
+        <h4>"5-Minute Setup" Guide</h4>
+        <p>1. **Download:** Save <code>webs.py</code> to your project folder.</p>
+        <p>2. **Create <code>app.py</code>:**</p>
+        <pre><code>from webs import Webs, Response
+
+app = Webs()
+
+@app.route('/')
+def index(request):
+    return Response("&lt;h1>It works! Hello from Wabs-5000.&lt;/h1>")
+
+if __name__ == '__main__':
+    app.run() # Starts on http://127.0.0.1:8000
+</code></pre>
+        <p>3. **Run:** <code>python app.py</code></p>
+
+        <h4>Command-Line Cheat Sheet</h4>
+        <table>
+            <tr><th>Command</th><th>Function</th><th>Notes</th></tr>
+            <tr><td><code>python app.py</code></td><td>Start Dev Server</td><td>Uses built-in <code>ThreadingHTTPServer</code>.</td></tr>
+            <tr><td><code>webs db init</code></td><td>Initialize Database</td><td>Creates necessary tables based on <code>Model</code> definitions.</td></tr>
+            <tr><td><code>webs db reset</code></td><td>Dangerous Reset</td><td>Drops and recreates all tables. **Use with caution!**</td></tr>
+            <tr><td><code>webs routes</code></td><td>View Routes</td><td>Lists all registered URL patterns.</td></tr>
+            <tr><td><code>webs asset clean</code></td><td>Clean Cache</td><td>Deletes cached/minified template and static assets.</td></tr>
+        </table>
+
+        <h4>Configuration Reference (Core <code>Webs</code> Attributes)</h4>
+        <table>
+            <tr><th>Attribute</th><th>Type</th><th>Default</th><th>Description</th></tr>
+            <tr><td><code>app.config.SECRET_KEY</code></td><td><code>str</code></td><td>Random UUID</td><td>**REQUIRED** for session signing and CSRF tokens.</td></tr>
+            <tr><td><code>app.config.DB_URL</code></td><td><code>str</code></td><td><code>sqlite:///db.sqlite3</code></td><td>Database connection string.</td></tr>
+            <tr><td><code>app.config.TEMPLATE_DIR</code></td><td><code>str</code></td><td><code>'templates'</code></td><td>Directory containing HTML templates.</td></tr>
+            <tr><td><code>app.config.DEBUG</code></td><td><code>bool</code></td><td><code>True</code></td><td>Enables hot-reloading and detailed error pages.</td></tr>
+        </table>
+
+        <hr>
+        <hr>
+
+        <h2 id="part2">**Part 2: The Deep Dive (Hero: Architecture & Engineering)**</h2>
+
+        <h3 id="architecture">2.1 Full Technical Documentation and Architecture Deep Dive</h3>
+
+        <h4>Architecture Pattern: Front Controller and Service Locator</h4>
+        <p>Webs uses the **Front Controller** pattern (<code>Webs</code> instance) for request handling, acting as a **Service Locator** for core services (<code>SecurityManager</code>, <code>DatabasePool</code>). The architecture is strictly **Layered**, adhering to the principle of separation of concerns despite the single-file delivery model.</p>
+
+        <h4>Component Diagram (Conceptual)</h4>
+        <p>The core structure involves three layers interacting via the **Front Controller**:</p>
+        <ul>
+            <li>**Presentation:** Template Engine (Sandboxing)</li>
+            <li>**Application:** <code>Webs</code>, <code>URLPatternRouter</code>, View Functions</li>
+            <li>**Data:** <code>Model</code> (ORM), <code>DatabasePool</code> (Thread-Safe SQLite3)</li>
+        </ul>
+
+        <h4>Request/Event Lifecycle</h4>
+        <ol>
+            <li>**Input:** Server receives request.</li>
+            <li>**Normalization:** The **<code>Request</code>** object is created (parsing headers, cookies, <code>json</code>/<code>form</code> data via <code>urllib.parse</code>).</li>
+            <li>**Routing:** **Python Regular Expressions (`re`)** in the <code>URLPatternRouter</code> match the path.</li>
+            <li>**Security Check:** <code>CSRFMiddleware</code> runs, using **<code>hmac.compare_digest()</code>**.</li>
+            <li>**View Execution:** The target function executes.</li>
+            <li>**Response Generation:** A **<code>Response</code>** object is created.</li>
+            <li>**Output:** Server transmits serialized HTTP response.</li>
+        </ol>
+
+        <h4>Core Data Structures</h4>
+        <ul>
+            <li>**URLPatternRouter:** Uses a dictionary of **compiled `re` patterns** mapped to view functions, enabling efficient O(1) lookups after initial compilation.</li>
+            <li>**DatabasePool:** A **`collections.deque`** (thread-safe queue) secured by a **`threading.Lock`** ensures only one thread can acquire/release an **SQLite3** connection at a time, preventing data corruption.</li>
+        </ul>
+
+        <hr>
+
+        <h3 id="security">2.2 Security, Reliability, and Software Engineering Concepts</h3>
+
+        <h4>Security Model</h4>
+        <ul>
+            <li>**Authentication:** Passwords are hashed using the industry-standard **PBKDF2-HMAC-SHA256** (100,000+ iterations) with unique salts generated by **`secrets.token_bytes`**.</li>
+            <li>**Template Sandboxing:** The <code>websTemplateEngine</code> performs **AST Analysis** on template logic and explicitly prohibits dangerous built-ins (`os`, `sys`, `eval`) via Python's **<code>compile()</code>** function, preventing Remote Code Execution (RCE).</li>
+            <li>**CSRF:** Anti-CSRF tokens are required for all mutable requests and validated using the **constant-time comparison function <code>hmac.compare_digest()</code>** to mitigate timing attacks.</li>
+        </ul>
+
+        <h4>Reliability</h4>
+        <p>Failure handling uses the **Sentinel** logging system to capture unhandled exceptions, ensuring easy integration with standard cloud logging solutions like AWS CloudWatch or GCP Logging.</p>
+
+        <h4>Software Engineering</h4>
+        <p>The **zero-dependency** mandate enforces high code quality, favoring **Unit Testing** and **Integration Testing** over mocking complex external libraries.</p>
+
+        <hr>
+        <hr>
+
+        <h2 id="part3">**Part 3: Tutorials and User Guides (Hero: Mastery)**</h2>
+
+        <h3 id="tutorials">3.1 Complete Tutorial Series</h3>
+        <p>The tutorials focus on the primary components that utilize the standard library features.</p>
+
+        <h4>Tutorial 2: Data Persistence with ORM</h4>
+        <pre><code>from webs import Webs, Model, Field
+
+class Post(Model):
+    title = Field(data_type='TEXT', required=True)
+    content = Field(data_type='TEXT')
+
+app = Webs()
+app.db_init([Post]) # Initialize DB tables
+# ... routing logic ...
+</code></pre>
+
+        <h4>Tutorial 4: Authentication and Deployment to webs.pythonanywhere.com</h4>
+        <p>Deployment involves configuring the WSGI file to point to the **<code>WSGIAdapter</code>** that wraps the main application instance (e.g., <code>application = WSGIAdapter(app)</code>), making the framework compatible with high-performance WSGI servers like Gunicorn or uWSGI, and platforms like **webs.pythonanywhere.com**.</p>
+
+        <hr>
+
+        <h3 id="reference">3.2 Full User Guides (Reference)</h3>
+        <p>The framework's API is intentionally small and discoverable:</p>
+        <table>
+            <tr><th>Component</th><th>Key Method/Property</th><th>Example Usage</th></tr>
+            <tr><td>**Request**</td><td><code>request.json</code></td><td>Access deserialized JSON payload.</td></tr>
+            <tr><td>**Response**</td><td><code>Response.redirect(url)</code></td><td>Perform a 302/301 redirect.</td></tr>
+            <tr><td>**Model**</td><td><code>Model.find_all(app)</code></td><td>Retrieve all records from a table.</td></tr>
+            <tr><td>**SecurityManager**</td><td><code>app.security.hash_password(pwd)</code></td><td>Generates PBKDF2-HMAC-SHA256 hash.</td></tr>
+        </table>
+
+        <hr>
+        <hr>
+
+        <h2 id="part4">**Part 4: The Pinnacle (Hero: Academia)**</h2>
+
+        <h3 id="thesis">4.1 PhD-Level Thesis: Title and Abstract</h3>
+
+        <h4>Thesis Title</h4>
+        <p><strong>The Architecture of Radical Self-Reliance: An Empirical Study on Security, Maintainability, and Performance in Zero-Dependency Web Frameworks (Wabs-5000).</strong></p>
+
+        <h4>Abstract</h4>
+        <p>This thesis investigates the viability and comparative advantages of developing enterprise-grade software frameworks using a **zero-external-dependency** mandate, as exemplified by the **Wabs-5000** Python Fullstack Framework. Traditional web development, heavily reliant on vast dependency graphs, is inherently exposed to supply-chain vulnerabilities, code bloat, and environmental instability. This work proposes and validates an alternative architectural model where all core services—including the ORM, Templating Engine, and Cryptography primitives—are implemented using only the language's standard library.</p>
+        <p>The methodology includes a formal security analysis of the custom **AST-based template sandboxing** and a performance evaluation of the **<code>threading.Lock</code>-managed <code>DatabasePool</code>**. Findings demonstrate that the zero-dependency approach dramatically improves **code auditability** and reduces the application's attack surface, achieving production-ready security (e.g., PBKDF2-HMAC-SHA256) and comparable performance metrics against frameworks with significant external toolchains. The thesis concludes that radical self-reliance is a critical, overlooked strategy for maintaining long-term stability and security in mission-critical software, proposing future work in formal verification of standard library-only codebases.</p>
+
+    </main>
+
+    <footer style="text-align: center; padding: 20px; color: var(--secondary);">
+        <p>&copy; 2025 Webs Fullstack Framework (Wabs-5000). MIT Licensed. Documentation Generated: October 2025.</p>
+    </footer>
+
+</body>
+</html>
